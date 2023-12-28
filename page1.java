@@ -1,6 +1,7 @@
 package com.packagename;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -13,7 +14,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 
-public class page1 extends AppCompatActivity {
+public class PageFive extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     AdView mAdView;
     InterstitialAd mInterstitialAd;
@@ -22,30 +23,29 @@ public class page1 extends AppCompatActivity {
     WebView webView;
     SwipeRefreshLayout swipe;
 
+    boolean isAdShow=false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.page1);
+        setContentView(R.layout.page_five);
 
-        AdRequest adRequest = new AdRequest.Builder().build();
 
-        // Prepare the Interstitial Ad
-        interstitial = new InterstitialAd(page1.this);
-        // Insert the Ad Unit ID
-        interstitial.setAdUnitId(getString(R.string.admob_interstitial_id));
+        int minute=20;  // X minute
+        isAdShow=false;
+        new CountDownTimer(minute*60000,1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
 
-        interstitial.loadAd(adRequest);
-        // Prepare an Interstitial Ad Listener
-        interstitial.setAdListener(new AdListener() {
-            public void onAdLoaded() {
-                // Call displayInterstitial() function
-                displayInterstitial();
             }
-        });
 
-        mAdView = (AdView) findViewById(R.id.adView);
-        adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+            @Override
+            public void onFinish() {
+                isAdShow=true;
+            }
+        }.start();
+
+
 
 
         swipe = (SwipeRefreshLayout) findViewById(R.id.swipe);
@@ -62,10 +62,13 @@ public class page1 extends AppCompatActivity {
 
     public void LoadWeb(){
 
-        webView = (WebView) findViewById(R.id.webView);
+        webView = (WebView) findViewById(R.id.webview);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        webView.loadUrl(getString(R.string.board_link));
+
+
+
+        webView.loadUrl(getString(R.string.page_five_link));
         swipe.setRefreshing(true);
         webView.setWebViewClient(new WebViewClient(){
 
@@ -84,15 +87,21 @@ public class page1 extends AppCompatActivity {
         });
     }
 
-    public void displayInterstitial() {
-        //
-        interstitial.setAdListener(new AdListener(){
-            public void onAdLoaded(){
-                displayInterstitial();
-            }
-        });
-    }
+    private void ShowAds() {
 
+        if (mInterstitialAd.isLoaded() && isAdShow) {
+            mInterstitialAd.show();
+            mInterstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdClosed() {
+                    super.onAdClosed();
+                    finish();
+                }
+            });
+        }else{
+            super.onBackPressed();
+        }
+    }
 
     @Override
     public void onBackPressed(){
