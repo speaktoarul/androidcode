@@ -1,0 +1,3 @@
+webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+
+
