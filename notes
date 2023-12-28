@@ -1,3 +1,43 @@
 webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 
 
+
+boolean isAdShow=false;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    int minute=1;  // X minute
+
+    isAdShow=false;
+    new CountDownTimer(minute*60000,1000) {
+      @Override
+      public void onTick(long millisUntilFinished) {
+
+      }
+
+      @Override
+      public void onFinish() {
+          isAdShow=true;
+      }
+  }.start();
+}
+
+private void ShowAds() {
+
+   if (interstitialAd.isLoaded() && isAdShow) {
+       interstitialAd.show();
+       interstitialAd.setAdListener(new AdListener() {
+          @Override
+          public void onAdClosed() {
+              super.onAdClosed();
+              finish();
+          }
+       });
+    }else{
+       super.onBackPressed();
+    }
+}
+
+
