@@ -1,0 +1,57 @@
+public class PageFive extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
+    AdView mAdView;
+    InterstitialAd mInterstitialAd;
+    private InterstitialAd interstitial;
+
+    WebView webView;
+    SwipeRefreshLayout swipe;
+
+    boolean isAdShow=false;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.page_five);
+
+
+        int minute=20;  // X minute
+        isAdShow=false;
+        new CountDownTimer(minute*60000,1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                isAdShow=true;
+            }
+        }.start();
+
+
+    private void ShowAds() {
+
+        if (mInterstitialAd.isLoaded() && isAdShow) {
+            mInterstitialAd.show();
+            mInterstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdClosed() {
+                    super.onAdClosed();
+                    finish();
+                }
+            });
+        }else{
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public void onBackPressed(){
+
+        if (webView.canGoBack()){
+            webView.goBack();
+        }else {
+            finish();
+        }
+    }
